@@ -24,6 +24,7 @@ enum {
     EUART_REG_DMA_CTRL = 0x20,
     EUART_REG_TIMER_PERIOD = 0x24,
     EUART_REG_TIMER_CTRL = 0x28,
+    EUART_REG_RX_DATA_LEN = 0x2C,
 };
 
 /* sizes */
@@ -92,6 +93,7 @@ typedef struct EUARTState {
     QEMUTimer *tx_timer;
     uint32_t timer_period;
     uint32_t timer_ctrl;
+    uint64_t timer_start_ns;    /* qemu virtual ns when enabled (0 if disabled) */
 
     /* helper */
     uint32_t data;
