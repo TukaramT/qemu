@@ -109,8 +109,6 @@ static void euart_put_uint32(uint32_t v)
     }
 }
 
-
-
 /****************************************************************/
 /* MAIN */
 /****************************************************************/
@@ -128,6 +126,18 @@ void main(void)
 
     uint32_t last_ticks = 0;
     uint32_t show_time = 0;
+
+    uint32_t rx = 1;
+    while (rx) {
+        if (EUART_REG_STATUS & EUART_STATUS_RX_READY)
+        {
+            char data = (char)EUART_REG_DATA;
+            euart_putc(data);
+            euart_putc('\n');
+
+            rx = 0;
+        }
+    }
 
     while (show_time < 5) {
         /******************************************************
