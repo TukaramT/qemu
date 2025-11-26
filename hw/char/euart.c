@@ -589,7 +589,7 @@ static void euart_class_init(ObjectClass *oc, const void *data)
     dc->unrealize = euart_unrealize;
     dc->vmsd      = &vmstate_euart;
     dc->user_creatable = true;
-    dc->categories[DEVICE_CATEGORY_MISC] = true;
+    // dc->categories[DEVICE_CATEGORY_MISC] = true;
 
     /* QEMU 10: link property */
     object_class_property_add_link(
