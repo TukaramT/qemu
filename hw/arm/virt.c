@@ -2434,7 +2434,7 @@ static void machvirt_init(MachineState *machine)
     euart_dev = qdev_new("euart");
 
     /* Attach the chosen serial backend (can be null only if QEMU has no serials) */
-    qdev_prop_set_chr(euart_dev, "chardev", chosen);
+    // qdev_prop_set_chr(euart_dev, "chardev", chosen);
 
     /* Realize the device */
     sysbus_realize_and_unref(SYS_BUS_DEVICE(euart_dev), &error_fatal);
@@ -2442,9 +2442,6 @@ static void machvirt_init(MachineState *machine)
 
     /* Map the MMIO region */
     sysbus_mmio_map(sbd, 0, base);
-
-    /* Connect the IRQ */
-    sysbus_connect_irq(sbd, 0, qdev_get_gpio_in(vms->gic, irq));
 
     printf("[EUART DEBUG] EUART initialized @ 0x%lx, IRQ=%d\n", (long)base, irq);
    }

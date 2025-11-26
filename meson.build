@@ -1,5 +1,5 @@
-project('qemu', ['c'], meson_version: '>=1.5.0',
-        default_options: ['warning_level=1', 'c_std=gnu11', 'cpp_std=gnu++11', 'b_colorout=auto',
+project('qemu', ['c', 'cpp'], meson_version: '>=1.5.0',
+        default_options: ['warning_level=1', 'c_std=gnu11', 'cpp_std=gnu++17', 'b_colorout=auto',
                           'b_staticpic=false', 'stdsplit=false', 'optimization=2', 'b_pie=true'],
         version: files('VERSION'))
 
@@ -801,6 +801,14 @@ add_project_arguments('-iquote', '.',
                       '-iquote', meson.current_source_dir(),
                       '-iquote', meson.current_source_dir() / 'include',
                       language: all_languages)
+
+  # --- FIX FOR QEMU HEADERS IN C++ ---
+  add_project_arguments('-std=gnu++17', '-DSC_ALLOW_DEPRECATED_IEEE_API',
+    '-I' + meson.current_source_dir() / 'include',
+    '-I' + meson.current_source_dir(),
+    '-I' + '/home/tukaramt/Tukarm/system_c/build/include',
+    language: 'cpp'
+  )
 
 # If a host-specific include directory exists, list that first...
 host_include = meson.current_source_dir() / 'host/include/'
@@ -4472,10 +4480,25 @@ foreach target : target_dirs
       exe_name += '-unsigned'
     endif
 
+    # --- SystemC integration for EUART ---
+    systemc_inc = include_directories('/home/tukaramt/Tukarm/system_c/build/include')
+
+    systemc_lib = declare_dependency(
+      include_directories: systemc_inc,
+      link_args: [
+        '-L/home/tukaramt/Tukarm/system_c/build/lib-linux64',
+        '-lsystemc'
+      ],
+    )
+
+    # Ensure linking with C++ standard library for SystemC glue
+    cxx = meson.get_compiler('cpp')
+    stdcpp = cxx.find_library('stdc++', required: true)
+
     emulator = executable(exe_name, exe['sources'],
                install: true,
                c_args: c_args,
-               dependencies: arch_deps + exe['dependencies'],
+               dependencies: arch_deps + exe['dependencies'] + [systemc_lib, stdcpp],
                objects: lib.extract_all_objects(recursive: true),
                link_depends: [block_syms, qemu_syms],
                link_args: link_args,
