@@ -107,7 +107,7 @@ void EUART_SC::tx_thread()
 void EUART_SC::rx_thread()
 {
     int fd = 0; // stdin
-    int flags = fcntl(fd, F_GETFL, 0);
+    int flags = fcntl(fd, F_GETFL);
     if (flags != -1) {
         fcntl(fd, F_SETFL, flags | O_NONBLOCK);
     }
