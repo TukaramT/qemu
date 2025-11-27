@@ -25,14 +25,16 @@ uint32_t sc_read(uint32_t addr);
 
 static uint64_t euart_read(void *opaque, hwaddr addr, unsigned size)
 {
+    // fprintf(stderr, "[EUART_WRAPPER]: READ offset=0x%lx\n",
+    //         (unsigned long)addr);
     return sc_read((uint32_t)addr);
 }
 
 static void euart_write(void *opaque, hwaddr addr, uint64_t value, unsigned size)
 {
+    // fprintf(stderr, "[EUART_WRAPPER]: WRITE offset=0x%lx value=0x%lx\n",
+    //         (unsigned long)addr, (unsigned long)value);
     sc_write((uint32_t)addr, (uint32_t)value);
-    printf("[Wrapper] sc_write completed");
-    fflush(stdout);
 }
 
 static const MemoryRegionOps euart_ops = {
