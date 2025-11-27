@@ -23,11 +23,18 @@ void main(void)
 
     // while(1);
 
+    char buf[100];
     // ---------------- Echo loop -------------------
     while(1) {
         while (!(EUART_STATUS & EUART_STATUS_RX_READY));
-        char c = EUART_RX;   // wait + read from RX
-        EUART_TX = c;
+        int i = 0;
+        char c = '0';
+        while (c != '\n') {
+            c = EUART_RX;   // wait + read from RX
+            buf[i] = c;
+            EUART_TX = buf[i];
+        }
+        i = 0;
         EUART_CTRL |= EUART_TX_START;
     } 
 }

@@ -79,11 +79,13 @@ void EUART_SC::write_reg(uint64_t offset, uint32_t value)
 // ------------
 void EUART_SC::rx_method_blocking()
 {
-    char c;
-    std::cin.get(c);        // <-- REAL BLOCK until user types a key
-
-    rx_fifo.push((uint8_t)c);
-    status_reg |= EUART_STATUS_RX_READY;
+    char c = '0';
+    printf("[SC] Waiting on RX\n");
+    while (c != '\n') {
+        std::cin.get(c);        // <-- REAL BLOCK until user types a key
+        rx_fifo.push((uint8_t)c);
+        status_reg |= EUART_STATUS_RX_READY;
+    }
 }
 
 //
