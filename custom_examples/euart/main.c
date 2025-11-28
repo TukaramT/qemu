@@ -61,7 +61,6 @@ static void uart_put_dec(uint32_t v)
         v = v % divisor;
         divisor /= 10;
     }
-    uart_puts("\n");
 }
 
 /****************************************************************/
@@ -90,10 +89,11 @@ void main(void)
     // ------------------------------------------------
     uart_puts("Hello World, Welcome to QEMU->SYSTEMC integration\n");
 
+    uint32_t freq = 1000000;     // 1 MHz
     // ------------------------------------------------
     // Configure TIMER
     // ------------------------------------------------
-    EUART_TIMER_PERIOD = 1000000;      // 1 MHz timer
+    EUART_TIMER_PERIOD = freq;
     EUART_TIMER_CTRL = TIMER_EN;       // enable timer
 
     uart_puts("Test DMA\n");
@@ -133,7 +133,8 @@ void main(void)
         while (!(EUART_STATUS & EUART_STATUS_TX_EMPTY));
 
         uint32_t ticks = EUART_TIMER_PERIOD;  // read counter
-        uart_puts("Ticks :- ");
-        uart_put_dec(ticks);
+        uart_puts("Time :- ");
+        uart_put_dec((ticks * 1000000)/freq);   // Gives time in milliseconds
+        uart_puts(" ms\n");
     }
 }

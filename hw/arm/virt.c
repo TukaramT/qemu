@@ -2406,29 +2406,29 @@ static void machvirt_init(MachineState *machine)
     int irq = 10;               // GIC IRQ number
 
     /* ----- DEBUG: Inspect available serial backends ----- */
-    printf("\n[EUART DEBUG] serial_hd(0)=%p serial_hd(1)=%p serial_hd(2)=%p serial_hd(3)=%p\n",
-           serial_hd(0), serial_hd(1), serial_hd(2), serial_hd(3));
+    // printf("\n[EUART DEBUG] serial_hd(0)=%p serial_hd(1)=%p serial_hd(2)=%p serial_hd(3)=%p\n",
+    //        serial_hd(0), serial_hd(1), serial_hd(2), serial_hd(3));
 
     /* ----- Choose chardev to bind ----- */
     /* Preferred: serial2 (what you intended originally) */
-    void *chosen = serial_hd(2);
+    // void *chosen = serial_hd(2);
 
     /* If serial2 does not exist, fallback to first available serial */
-    if (!chosen) {
-        for (int i = 0; i < 4; i++) {
-            if (serial_hd(i)) {
-                chosen = serial_hd(i);
-                printf("[EUART DEBUG] Falling back to serial_hd(%d)\n", i);
-                break;
-            }
-        }
-    }
+    // if (!chosen) {
+    //     for (int i = 0; i < 4; i++) {
+    //         if (serial_hd(i)) {
+    //             chosen = serial_hd(i);
+    //             printf("[EUART DEBUG] Falling back to serial_hd(%d)\n", i);
+    //             break;
+    //         }
+    //     }
+    // }
 
-    if (!chosen) {
-        printf("[EUART ERROR] No available serial backend! EUART will be unconnected.\n");
-    } else {
-        printf("[EUART DEBUG] Binding EUART to chardev=%p\n", chosen);
-    }
+    // if (!chosen) {
+    //     printf("[EUART ERROR] No available serial backend! EUART will be unconnected.\n");
+    // } else {
+    //     printf("[EUART DEBUG] Binding EUART to chardev=%p\n", chosen);
+    // }
 
     /* ----- Create EUART device ----- */
     euart_dev = qdev_new("euart");

@@ -93,6 +93,8 @@ uint32_t EUART_SC::read_reg(uint64_t addr)
             uint64_t now = get_sim_time_ns();
             uint64_t elapsed = now - timer_start_ns;
 
+            std::cout << "[SC] Elapsed Time :- [" << elapsed << "]" << " ns\n";
+
             uint64_t ticks =
                 (uint64_t)(((__uint128_t)elapsed * timer_period_hz) /
                            1000000000ULL);
