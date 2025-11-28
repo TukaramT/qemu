@@ -6,6 +6,13 @@
 #define EUART_TX        (*(volatile unsigned int *)(EUART_BASE + 0x04))
 #define EUART_CTRL      (*(volatile unsigned int *)(EUART_BASE + 0x08))
 #define EUART_STATUS    (*(volatile unsigned int *)(EUART_BASE + 0x0C))
+#define EUART_RX_DATA_LEN      (*(volatile uint32_t *)(EUART_BASE + 0x10))
+
+// DMA Registers
+#define EUART_DMA_SRC       (*(volatile unsigned int *)(EUART_BASE + 0x40))
+#define EUART_DMA_DST       (*(volatile unsigned int *)(EUART_BASE + 0x44))
+#define EUART_DMA_LEN       (*(volatile unsigned int *)(EUART_BASE + 0x48))
+#define EUART_DMA_CTRL      (*(volatile unsigned int *)(EUART_BASE + 0x4C))
 
 // Timer registers (from SystemC/QEMU timer)
 #define EUART_TIMER_PERIOD  (*(volatile unsigned int *)(EUART_BASE + 0x20))
@@ -14,6 +21,8 @@
 // Control bits
 #define EUART_TX_START      (1 << 0)
 #define TIMER_EN            (1 << 0)
+#define DMA_START           (1 << 0)
+#define DMA_DIR_RAM2TX      (1 << 1)   // 0 = RX->RAM, 1 = RAM->TX
 
 // Status bits
 #define EUART_STATUS_RX_READY (1 << 0)
@@ -52,9 +61,27 @@ static void uart_put_dec(uint32_t v)
         v = v % divisor;
         divisor /= 10;
     }
-    uart_puts(" secs\n");
+    uart_puts("\n");
 }
 
+/****************************************************************/
+/* DMA helpers */
+/****************************************************************/
+static char dma_buf[64];
+
+static void dma_rx_test(uint32_t bytes)
+{
+    EUART_DMA_DST = (uint32_t)dma_buf;
+    EUART_DMA_LEN = bytes;
+    EUART_DMA_CTRL = DMA_START;
+}
+
+static void dma_tx_test(uint32_t bytes)
+{
+    EUART_DMA_SRC = (uint32_t)dma_buf;
+    EUART_DMA_LEN = bytes;
+    EUART_DMA_CTRL = DMA_START | DMA_DIR_RAM2TX;
+}
 
 void main(void)
 {
@@ -69,14 +96,30 @@ void main(void)
     EUART_TIMER_PERIOD = 1000000;      // 1 MHz timer
     EUART_TIMER_CTRL = TIMER_EN;       // enable timer
 
-    // ------------------------------------------------
-    // Echo loop
-    // ------------------------------------------------
-    char buf[100];
+    uart_puts("Test DMA\n");
 
+
+    while (!(EUART_STATUS & EUART_STATUS_RX_READY));
+
+    uint32_t count = EUART_RX_DATA_LEN;
+
+    dma_rx_test(count);
+    while (EUART_DMA_CTRL & DMA_START);
+
+    dma_tx_test(count);
+
+    for (uint32_t i = 0; i < count; i++)
+        dma_buf[i] = 0;   
+    
+    uart_puts("Test I/O and Timer\n");
+        
     while (1) {
         while (!(EUART_STATUS & EUART_STATUS_RX_READY));
 
+        // ------------------------------------------------
+        // Echo loop
+        // ------------------------------------------------
+        char buf[100];
         int i = 0;
         char c = 0;
 

@@ -86,7 +86,6 @@ void sc_write(uint32_t addr, uint32_t value)
     trans.set_address(addr);
     trans.set_data_ptr(reinterpret_cast<unsigned char*>(&value));
     trans.set_data_length(4);
-
     glue_module->socket->b_transport(trans, delay);
 }
 
