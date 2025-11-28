@@ -106,22 +106,12 @@ void EUART_SC::write_reg(uint64_t addr, uint32_t val)
         break;
 
     case EUART_REG_TIMER_CTRL: {
-        uint32_t old = timer_ctrl;
         timer_ctrl = val;
 
-        bool old_en = old & TIMER_EN;
-        bool new_en = val & TIMER_EN;
-
-        if (!old_en && new_en) {
-            if (timer_period_hz == 0)
-                timer_start_ns = 0;
-            else
-                timer_start_ns = get_sim_time_ns();
-        }
-
-        if (old_en && !new_en) {
+        if (timer_period_hz == 0)
             timer_start_ns = 0;
-        }
+        else
+            timer_start_ns = get_sim_time_ns();
 
         break;
     }
