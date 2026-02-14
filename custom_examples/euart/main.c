@@ -135,6 +135,6 @@ void main(void)
         uint32_t ticks = EUART_TIMER_PERIOD;  // read counter
         uart_puts("Time :- ");
         uart_put_dec((ticks * 1000000)/freq);   // Gives time in milliseconds
-        uart_puts(" ms\n");
+        uart_puts(" us\n");
     }
 }
